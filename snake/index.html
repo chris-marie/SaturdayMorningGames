@@ -43,18 +43,18 @@
     // have closure around the goSnake variable so that all vars inside are private
     goSnake.game = (function() {
         var canvas, context;
-        canvas = document.getElementById('snakeCanvas');
-        context = canvas.getContext('2d');
-        goSnake.width = canvas.width;
-        goSnake.height = canvas.height;
+
         goSnake.blockSize = 20;
         frameLength = 500;
         var snake;
 
         function init() {    // initialize game canvas
-            console.log('params = ' + goSnake.width  + ' x ' + goSnake.height);
-            canvas = document.getElementById('snake');
+            canvas = document.getElementById('snakeCanvas');
+            context = canvas.getContext('2d');
+            goSnake.width = canvas.width;
+            goSnake.height = canvas.height;
             snake = goSnake.snake();
+            bindEvents();
             gameLoop();
         }
 
@@ -65,13 +65,29 @@
             setTimeout(gameLoop, frameLength);
         }
 
+        function bindEvents() {
+            var keysToDirections = {
+                37: 'left',
+                38: 'up',
+                39: 'right',
+                40: 'down'
+            };
+            $(document).keydown(function (event) {
+                var key = event.which;
+                var direction = keysToDirections[key];
+
+                if (direction) {
+                    snake.setDirection(direction);
+                    event.preventDefault();
+                }
+            });
+        }
+
         return {
             // makeing variable public
             init: init
         };
     })();
-
-
 
     // Drawing the snake
     goSnake.snake = function() {
@@ -80,15 +96,30 @@
         posArray.push([5,4]);
         posArray.push([4,4]);
         var direction = 'right';
+        var nextDirection = direction;
 
-    //    console.log('posArray = ' + posArray);
+        function setDirection(newDirection) {
+            var allowedDirections;
+            switch(direction) {
+                case 'left':
+                case 'right':
+                    allowedDirections = ['up', 'down'];
+                    break;
+                case 'up':
+                case 'down':
+                    allowedDirections = ['left', 'right'];
+                    break;
+                default:
+                    throw('Invalid direction');
+            }
+            if( allowedDirections.indexOf(newDirection) > -1 ) {
+                nextDirection = newDirection;
+            }
+        }
 
         function drawSection(context, position) {
             var x = goSnake.blockSize * position[0];
             var y = goSnake.blockSize * position[1];
-        //    console.log('position: ' + position[0] + ',' + position[1]);
-          //  console.log('goSnake.blockSize: ' + goSnake.blockSize);
-            //console.log('fill rect coord: '+ x + ',' + y);
             context.fillRect(x,y,goSnake.blockSize,goSnake.blockSize);
         }
 
@@ -105,17 +136,35 @@
 
         function mvForward() {
             var nextPosition = posArray[0].slice(); //copy head of snake
-            nextPosition[0] += 1; //add 1 to the x position
+      //      nextPosition[0] += 1; //add 1 to the x position
+            direction = nextDirection;
+            switch (direction) {
+                case 'left':
+                    nextPosition[0] -=1;
+                    break;
+                case 'right':
+                    nextPosition[0] +=1;
+                    break;
+                case 'down':
+                    nextPosition[1] +=1;
+                    break;
+                case 'up':
+                    nextPosition[1] -=1;
+                    break;
+                default:
+                    throw('Invalid Direction');
+            }
 
-            //add the new position to the beginning of the array
+
             posArray.unshift(nextPosition);
-            //and remove the last position
+            //pop off last position
             posArray.pop();
         }
 
         return {
             draw: draw,
-            mvForward: mvForward
+            mvForward: mvForward,
+            setDirection: setDirection
         };
     };
 
