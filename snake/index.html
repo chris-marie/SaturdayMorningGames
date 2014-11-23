@@ -31,17 +31,47 @@
 </head>
 <body>
 <header>SNAKE!!</header>
-<canvas id="snake" width="600" height="600"></canvas>
+<canvas id="snakeCanvas" width="600" height="600"></canvas>
 
 
 
 <script>
     // started with the tutorial at: http://css-tricks.com/learn-canvas-snake-game/
-    window.addEventListener('DOMContentLoaded', function() {
+
+    var goSnake = {};
+
+    // have closure around the goSnake variable so that all vars inside are private
+    goSnake.game = (function() {
         var canvas, context;
-        canvas = document.getElementById('snake');
-        context.fillStyle = 'pink';
-        context.fillRect(100,100,150,130);
+        canvas = document.getElementById('snakeCanvas');
+        context = canvas.getContext('2d');
+        var xPos = 0, yPos = 0;
+        frameLength = 500;
+
+        function init() {    // initialize game canvas
+            canvas = document.getElementById('snake');
+            context.fillStyle = 'pink';
+            context.fillRect(100, 100, 150, 130);
+            gameLoop();
+        }
+
+        function gameLoop() {
+            xPos += 5;
+            yPos += 10;
+            context.clearRect(0,0,600,600);
+            context.fillRect(xPos, yPos, 30, 50);
+            context.fillStyle = 'red';
+            setTimeout(gameLoop, frameLength);
+        }
+
+        return {
+            // makeing variable public
+            init: init
+        };
+    })();
+
+    window.addEventListener('DOMContentLoaded', function() {
+        goSnake.game.init();
     });
 
 
