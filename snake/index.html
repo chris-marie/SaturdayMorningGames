@@ -45,22 +45,21 @@
         var canvas, context;
         canvas = document.getElementById('snakeCanvas');
         context = canvas.getContext('2d');
-        var xPos = 0, yPos = 0;
+        goSnake.blockSize = 20;
         frameLength = 500;
+        var snake;
 
         function init() {    // initialize game canvas
+            console.log('params = ' + goSnake.width  + ' x ' + goSnake.height);
             canvas = document.getElementById('snake');
-            context.fillStyle = 'pink';
-            context.fillRect(100, 100, 150, 130);
+            snake = goSnake.snake();
             gameLoop();
         }
 
         function gameLoop() {
-            xPos += 5;
-            yPos += 10;
-            context.clearRect(0,0,600,600);
-            context.fillRect(xPos, yPos, 30, 50);
-            context.fillStyle = 'red';
+            context.clearRect(0,0,goSnake.width,goSnake.height);
+            snake.mvForward();
+            snake.draw(context);
             setTimeout(gameLoop, frameLength);
         }
 
@@ -69,6 +68,53 @@
             init: init
         };
     })();
+
+
+
+    // Drawing the snake
+    goSnake.snake = function() {
+        var posArray = [];
+        posArray.push([6,4]);
+        posArray.push([5,4]);
+        posArray.push([4,4]);
+        var direction = 'right';
+
+    //    console.log('posArray = ' + posArray);
+
+        function drawSection(context, position) {
+            var x = goSnake.blockSize * position[0];
+            var y = goSnake.blockSize * position[1];
+        //    console.log('position: ' + position[0] + ',' + position[1]);
+          //  console.log('goSnake.blockSize: ' + goSnake.blockSize);
+            console.log('fill rect coord: '+ x + ',' + y);
+            context.fillRect(x,y,goSnake.blockSize,goSnake.blockSize);
+        }
+
+        function draw(context) {
+            context.save();
+            context.fillStyle = 'blue';
+            for (var i = 0; i < posArray.length; i++) {
+                drawSection(context, posArray[i]);
+                //console.log('draw index: ' + i);
+            }
+            context.restore();
+        }
+
+        function mvForward() {
+            var nextPosition = posArray[0].slice(); //copy head of snake
+            nextPosition[0] += 1; //add 1 to the x position
+
+            //add the new position to the beginning of the array
+            posArray.unshift(nextPosition);
+            //and remove the last position
+            posArray.pop();
+        }
+
+        return {
+            draw: draw,
+            mvForward: mvForward
+        };
+    };
 
     window.addEventListener('DOMContentLoaded', function() {
         goSnake.game.init();
@@ -80,6 +126,38 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
