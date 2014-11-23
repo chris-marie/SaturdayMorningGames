@@ -40,29 +40,123 @@
 
     var goSnake = {};
 
+
+    goSnake.equalCoordinates = function (coord1, coord2) {
+        return coord1[0] === coord2[0] && coord1[1] === coord2[1];
+    }
+
+    goSnake.checkCoordinateInArray = function (coord, arr) {
+        var isInArray = false;
+        $.each(arr, function (index, item) {
+            if (goSnake.equalCoordinates(coord, item)) {
+                isInArray = true;
+            }
+        });
+        return isInArray;
+    };
+
+
+
     // have closure around the goSnake variable so that all vars inside are private
     goSnake.game = (function() {
         var canvas, context;
-
+        canvas = document.getElementById('snakeCanvas');
         goSnake.blockSize = 20;
-        frameLength = 500;
+        goSnake.width = canvas.width;
+        goSnake.height = canvas.height;
+        goSnake.widthInBlocks = goSnake.width / goSnake.blockSize;
+        goSnake.heightInBlocks = goSnake.height / goSnake.blockSize;
+        var timeout, score, frameLength;
         var snake;
+        var apple;
 
         function init() {    // initialize game canvas
             canvas = document.getElementById('snakeCanvas');
             context = canvas.getContext('2d');
-            goSnake.width = canvas.width;
-            goSnake.height = canvas.height;
+            score = 0;
+            frameLength = 280;
             snake = goSnake.snake();
+            apple = goSnake.apple();
             bindEvents();
             gameLoop();
         }
 
         function gameLoop() {
             context.clearRect(0,0,goSnake.width,goSnake.height);
-            snake.mvForward();
+            snake.mvForward(apple);
+            draw();
+            if (snake.checkCollision()) {
+                snake.retreat(); //move snake back to previous position
+                snake.draw(context); //draw snake in its previous position
+                gameOver();
+            }
+            else {
+                timeout = setTimeout(gameLoop, frameLength);
+            }
+        }
+
+        function draw() {
             snake.draw(context);
-            setTimeout(gameLoop, frameLength);
+            drawBorder();
+            apple.draw(context);
+            drawScore();
+        }
+
+        function drawScore() {
+            context.save();
+            context.font = 'bold 102px sans-serif';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillStyle = 'rgba(0,0,0,0.3)';
+            context.fillText(score.toString(), goSnake.width / 2, goSnake.height / 2);
+            context.restore();
+        }
+
+        function gameOver() {
+            context.save();
+            context.font = 'bold 30px sans-serif';
+            context.fillStyle = '#000';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.strokeStyle = 'white';
+            context.lineWidth = 2;
+            var centreX = goSnake.width / 2;
+            var centreY = goSnake.width / 2;
+            context.strokeText('Game Over', centreX, centreY - 10);
+            context.fillText('Game Over', centreX, centreY - 10);
+            context.font = 'bold 15px sans-serif';
+            context.strokeText('Press space to restart', centreX, centreY + 15);
+            context.fillText('Press space to restart', centreX, centreY + 15);
+            context.restore();
+        }
+
+        function drawBorder() {
+            context.save();
+            context.strokeStyle = 'gray';
+            context.lineWidth = goSnake.blockSize;
+            context.lineCap = 'square';
+            var offset = context.lineWidth / 2;
+            var corners = [
+                [offset, offset],
+                [goSnake.width - offset, offset],
+                [goSnake.width - offset, goSnake.height - offset],
+                [offset, goSnake.height - offset]
+            ];
+            context.beginPath();
+            context.moveTo(corners[3][0], corners[3][1]);
+            $.each(corners, function (index, corner) {
+                context.lineTo(corner[0], corner[1]);
+            });
+            context.stroke();
+            context.restore();
+        }
+
+        function restart() {
+            clearTimeout(timeout);
+            $('body').unbind('keydown');
+            $(goSnake).unbind('appleEaten');
+            $(canvas).unbind('click');
+            goSnake.game.init();
         }
 
         function bindEvents() {
@@ -79,8 +173,16 @@
                 if (direction) {
                     snake.setDirection(direction);
                     event.preventDefault();
+                } else if (key === 32) {
+                    restart();
                 }
             });
+            $(goSnake).bind('appleEaten', function (event, snakePositions) {
+                apple.setNewPosition(snakePositions);
+                score++;
+                frameLength *= 0.99; //subtle speed-up
+            });
+            $(canvas).click(restart);
         }
 
         return {
@@ -88,6 +190,53 @@
             init: init
         };
     })();
+
+    goSnake.apple = function () {
+        var position = [6,6];
+
+        function draw(context) {
+            context.save();
+            context.fillStyle = 'red';
+            context.beginPath();
+            var radius = goSnake.blockSize / 2;
+            var x = position[0] * goSnake.blockSize + radius;
+            var y = position[1] * goSnake.blockSize + radius;
+            context.arc(x,y,radius,0,Math.PI * 2, true);
+            context.fill();
+            context.restore();
+        }
+
+        function random(low, high) {
+            return Math.floor(Math.random() * (high - low + 1) + low);
+        }
+
+        function getRandomPosition() {
+            var x = random(1, goSnake.widthInBlocks - 2);
+            var y = random(1, goSnake.heightInBlocks - 2);
+            return [x, y];
+        }
+
+        function setNewPosition(snakeArray) {
+            var newPosition = getRandomPosition();
+            //if new position is already covered by the snake, try again
+            if (goSnake.checkCoordinateInArray(newPosition, snakeArray)) {
+                return setNewPosition(snakeArray);
+            }
+            //otherwise set position to the new position
+            else {
+                position = newPosition;
+            }
+        }
+
+        function getPosition() {
+            return position;
+        }
+        return {
+            draw: draw,
+            setNewPosition: setNewPosition,
+            getPosition: getPosition
+        };
+    };
 
     // Drawing the snake
     goSnake.snake = function() {
@@ -134,8 +283,30 @@
             context.restore();
         }
 
-        function mvForward() {
-            var nextPosition = posArray[0].slice(); //copy head of snake
+        function checkCollision() {
+            var wallCollision = false;
+            var snakeCollision = false;
+            var head = posArray[0];
+            var rest = posArray.slice(1);
+            var snakeX = head[0];
+            var snakeY = head[1];
+            var minX = 1;
+            var minY = 1;
+            var maxX = goSnake.widthInBlocks - 1;
+            var maxY = goSnake.heightInBlocks - 1;
+            var outsideHorizontalBounds = snakeX < minX || snakeX >= maxX;
+            var outsideVerticalBounds = snakeY < minY || snakeY >= maxY;
+
+            if (outsideHorizontalBounds || outsideVerticalBounds) {
+                wallCollision = true;
+            }
+
+            snakeCollision = goSnake.checkCoordinateInArray(head, rest);
+            return wallCollision || snakeCollision;
+        }
+
+        function mvForward(apple) {
+            var nextPosition = posArray[0].slice();
       //      nextPosition[0] += 1; //add 1 to the x position
             direction = nextDirection;
             switch (direction) {
@@ -155,22 +326,40 @@
                     throw('Invalid Direction');
             }
 
-
+            previousPosArray = posArray.slice(); //save previous array
             posArray.unshift(nextPosition);
+            if (isEatingApple(posArray[0], apple)) {
+                $(goSnake).trigger('appleEaten', [posArray]);
+            } else {
             //pop off last position
             posArray.pop();
+            }
+        }
+
+        function isEatingApple(head, apple) {
+            return goSnake.equalCoordinates(head, apple.getPosition());
+        }
+
+        function retreat() {
+            posArray = previousPosArray;
         }
 
         return {
             draw: draw,
             mvForward: mvForward,
-            setDirection: setDirection
+            setDirection: setDirection,
+            retreat: retreat,
+            checkCollision: checkCollision
         };
     };
 
-    window.addEventListener('DOMContentLoaded', function() {
-        goSnake.game.init();
-    });
+
+
+
+
+
+    goSnake.game.init();
+
 
 
 
