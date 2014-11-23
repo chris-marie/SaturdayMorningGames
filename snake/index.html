@@ -45,6 +45,8 @@
         var canvas, context;
         canvas = document.getElementById('snakeCanvas');
         context = canvas.getContext('2d');
+        goSnake.width = canvas.width;
+        goSnake.height = canvas.height;
         goSnake.blockSize = 20;
         frameLength = 500;
         var snake;
@@ -86,7 +88,7 @@
             var y = goSnake.blockSize * position[1];
         //    console.log('position: ' + position[0] + ',' + position[1]);
           //  console.log('goSnake.blockSize: ' + goSnake.blockSize);
-            console.log('fill rect coord: '+ x + ',' + y);
+            //console.log('fill rect coord: '+ x + ',' + y);
             context.fillRect(x,y,goSnake.blockSize,goSnake.blockSize);
         }
 
@@ -94,6 +96,7 @@
             context.save();
             context.fillStyle = 'blue';
             for (var i = 0; i < posArray.length; i++) {
+                //console.log('posArray len: ' + posArray.length);
                 drawSection(context, posArray[i]);
                 //console.log('draw index: ' + i);
             }
