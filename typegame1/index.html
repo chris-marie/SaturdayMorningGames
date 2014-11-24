@@ -6,31 +6,101 @@
     <style>
         #quoteContainer {
             border: 1px solid black;
-            padding: 1em;
+            padding: 2em;
             display: inline-block;
             float: left;
+            width: 40%;
         }
         #typeContainer {
             border: 1px solid black;
-            padding: 1em;
             display: inline-block;
+            width: 45%;
+            padding: .2em;
         }
+        #inpTypedText {
+            padding: 2em;
+            width: 90%;
+            display: block;
+            margin: auto;
+
+        }
+
     </style>
 </head>
-<header>Sharpen your typing skills while supplementing your intellect.
-</header>
+
 <body>
-<div class="left" id="quoteContainer">This will be a quote from something...
+<header>Sharpen your typing skills while supplementing your intellect.</header>
+
+<div class="left" id="quoteContainer">
+    <div id="quoteText">This will be a quote from something...</div>
 </div>
+
+<button id="btnPlay">PLAY</button>
+
 <div class="input" id="typeContainer">
-    <input type="text" id="typedText" placeholder="Get your fingers ready..."/>
+    <input type="text" id="inpTypedText" placeholder="Get your fingers ready..."/>
 </div>
-<script src='readings/sample.js'>
+
+
+
+<script src='readings/sample.js' id="typeThisText"></script>
+
+<script>
+
+    var quoteBox, typedBox;
+    var quote, input;
+
+    quoteContainer = document.getElementById('quoteContainer');
+    quoteBox = document.getElementById('quoteText');
+    typedBox = document.getElementById('typeContainer');
 
     window.addEventListener('DOMContentLoaded', function() {
-        var typeThis = reading.quote;
-        console.log(typeThis);
+        quote = reading.quote;
+        quoteBox.textContent = quote;
+
+        input = document.getElementById('inpTypedText');
+        input.addEventListener('input', function () {
+            console.log('input: ' + input.value);
+        });
+
     });
+
+    // listener input change
+    // string.split() ' ' pass string get back array
+
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
