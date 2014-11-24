@@ -59,6 +59,8 @@
     window.addEventListener('DOMContentLoaded', function() {
         quote = reading.quote;
         quoteBox.textContent = quote;
+        quoteArray = quote.slice(" ");
+        console.log(quoteArray);
 
         input = document.getElementById('inpTypedText');
         input.addEventListener('input', function () {
@@ -66,8 +68,20 @@
             inputArray.push(lastChar);
             console.log(inputArray);
             console.log('last char: ' + lastChar);
+            idx = inputArray.length;
+            console.log(idx + ' = idx');
+            compareInput(idx,quoteArray,inputArray);
         });
 
+        function compareInput(index,arr1,arr2) {
+            var c1 = arr1[idx];
+            var c2 = arr2[idx];
+            console.log('c1: ' + c1 + ' ,c2: ' + c2);
+            if(c1 !== c2) {
+                console.log('changing background color');
+                typedBox.style.backgroundColor = 'red';
+            }
+        }
     });
 
 
