@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Basic Typing Application</title>
+    <style>
+        #quoteContainer {
+            border: 1px solid black;
+            padding: 1em;
+            display: inline-block;
+            float: left;
+        }
+        #typeContainer {
+            border: 1px solid black;
+            padding: 1em;
+            display: inline-block;
+        }
+    </style>
+</head>
+<header>Sharpen your typing skills while supplementing your intellect.
+</header>
+<body>
+<div class="left" id="quoteContainer">This will be a quote from something...
+</div>
+<div class="input" id="typeContainer">
+    <input type="text" id="typedText" placeholder="Get your fingers ready..."/>
+</div>
+<script src='readings/sample.js'>
+
+    window.addEventListener('DOMContentLoaded', function() {
+        var typeThis = reading.quote;
+        console.log(typeThis);
+    });
+</script>
+</body>
+</html>
