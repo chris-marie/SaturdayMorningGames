@@ -49,6 +49,8 @@
 
     var quoteBox, typedBox;
     var quote, input;
+    var inputArray = [];  // intialize as empty array
+    var quoteArray = [];
 
     quoteContainer = document.getElementById('quoteContainer');
     quoteBox = document.getElementById('quoteText');
@@ -60,10 +62,14 @@
 
         input = document.getElementById('inpTypedText');
         input.addEventListener('input', function () {
-            console.log('input: ' + input.value);
+            var lastChar = input.value.slice(-1)
+            inputArray.push(lastChar);
+            console.log(inputArray);
+            console.log('last char: ' + lastChar);
         });
 
     });
+
 
     // listener input change
     // string.split() ' ' pass string get back array
