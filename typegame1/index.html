@@ -64,22 +64,41 @@
 
         input = document.getElementById('inpTypedText');
         input.addEventListener('input', function () {
+            var acceptInput;
             var lastChar = input.value.slice(-1)
             inputArray.push(lastChar);
             console.log(inputArray);
             console.log('last char: ' + lastChar);
             idx = inputArray.length;
             console.log(idx + ' = idx');
-            compareInput(idx,quoteArray,inputArray);
+            acceptInput = compareInput(idx,quoteArray,inputArray);
+            if(acceptInput) {
+                // input matches quote - leave array the same
+                console.log('text matches!')
+            } else {
+                // No match with quote -  pop off last character
+                inputArray.pop();
+                console.log('wrong character - deleted from array');
+            }
+
         });
 
         function compareInput(index,arr1,arr2) {
+            var idx = index -1;
             var c1 = arr1[idx];
             var c2 = arr2[idx];
-            console.log('c1: ' + c1 + ' ,c2: ' + c2);
+
             if(c1 !== c2) {
-                console.log('changing background color');
+
+                console.log('changing background color to red' + 'c1: ' + c1 + ' ,c2: ' + c2);
                 typedBox.style.backgroundColor = 'red';
+                // need to take off the incorrect input or else it stays on the array
+                return false;
+            } else {
+                console.log('changing background color to white');
+                typedBox.style.backgroundColor = 'white';
+                // leave the same if correct
+                return true;
             }
         }
     });
