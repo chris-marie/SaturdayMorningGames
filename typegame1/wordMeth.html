@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        textarea {
+
+        }
+
+        #sanitized {
+            padding: 3px;
+        }
+
+        span.active {
+            text-decoration: underline;
+            color: green;
+            transition: color 500ms
+        }
+    </style>
+</head>
+<body>
+<textarea id="text_to_type">
+    Vincent Willem van Gogh (Dutch: [ˈvɪnsɛnt ˈʋɪləm vɑn ˈɣɔχ] ( listen);[note 1] 30 March 1853 – 29 July 1890) was a Post-Impressionist painter of Dutch origin whose work—notable for its rough beauty, emotional honesty, and bold color—had a far-reaching influence on 20th-century art. After years of painful anxiety and frequent bouts of mental illness,[1][2] he died aged 37 from a gunshot wound, generally accepted to be self-inflicted (although no gun was ever found).[3][note 2]
+</textarea>
+<div id="sanitized">
+
+</div>
+
+<input type="text" autofocus/>
+
+<script>
+
+    var sanitized = document.getElementById('sanitized');
+    var textarea = document.getElementById('text_to_type');
+    var arr_span_innerHTML = textarea.innerHTML.split(' ');
+
+    arr_span_innerHTML = arr_span_innerHTML.filter(function(elem) {
+        return elem.replace(/\s/gmi, ''); /// replace new line, empty strings ect characters with empty string
+
+    }).map(function(elem) {
+        return elem.trim();
+    });
+
+    var arr_wpm = [];
+
+    arr_span_innerHTML.forEach(function (elem) {
+        var span = document.createElement('span');
+        span.innerHTML = elem;
+        sanitized.appendChild(span);
+    });
+
+
+    var current_span = sanitized.firstElementChild;
+    current_span.className = 'active';
+    var start;
+    var total = start = new Date();
+
+    document.getElementById('input').addEventListener('keydown', function (event) {
+        if (event.keyCode === 32) {
+            console.log(this.value);
+            var current = this.value.time();
+            console.log(current);
+
+            if(current === current_span.innerHTML) {
+                var end = new Date();
+                arr_wpm.push(end-start);
+                start=end;
+                this.value = '';
+                current_span.className = '';
+                console.log(current_span.nextSibling);
+                current_span = current_span.nextElementSibling;
+                current_span.className = 'active';
+                console.log(arr_wpm);
+            }
+
+        }
+    });
+</script>
+
+
+</body>
+
+</html>
