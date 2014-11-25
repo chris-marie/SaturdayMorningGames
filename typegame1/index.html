@@ -18,11 +18,11 @@
             padding: .2em;
         }
         #inpTypedText {
+            background-color: white;
             padding: 2em;
             width: 90%;
             display: block;
             margin: auto;
-
         }
 
     </style>
@@ -40,8 +40,6 @@
 <div class="input" id="typeContainer">
     <input type="text" id="inpTypedText" placeholder="Get your fingers ready..."/>
 </div>
-
-
 
 <script src='readings/sample.js' id="typeThisText"></script>
 
@@ -80,23 +78,22 @@
                 inputArray.pop();
                 console.log('wrong character - deleted from array');
             }
-
         });
 
         function compareInput(index,arr1,arr2) {
             var idx = index -1;
             var c1 = arr1[idx];
             var c2 = arr2[idx];
-
             if(c1 !== c2) {
-
                 console.log('changing background color to red' + 'c1: ' + c1 + ' ,c2: ' + c2);
                 typedBox.style.backgroundColor = 'red';
+                // input.style.backgroundColor = 'F9877D' WANT: color the inside of box el.style.addRule('.F9877D::first-line' ) ???
                 // need to take off the incorrect input or else it stays on the array
                 return false;
             } else {
                 console.log('changing background color to white');
-                typedBox.style.backgroundColor = 'white';
+                typedBox.style.backgroundColor = 'green';
+                input.style.backgroundColor = 'white';
                 // leave the same if correct
                 return true;
             }
@@ -106,6 +103,28 @@
 
     // listener input change
     // string.split() ' ' pass string get back array
+
+    /*
+
+
+    inputtag.addEventListener('keyup', function (event) {
+      console.log(this.value);
+    });
+
+
+     inputtag.addEventListener('keydown', function (event) {
+     if(event.keyCode ===32) {
+      console.log(this.value);
+      var current = this.value.time()
+      console.log(current);
+      this.value = '';
+     }
+
+     });
+
+     */
+
+
 
 </script>
 </body>
