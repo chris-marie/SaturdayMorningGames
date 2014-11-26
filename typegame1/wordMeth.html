@@ -4,12 +4,57 @@
     <meta charset="UTF-8">
     <title></title>
     <style>
-        textarea {
+
+        nav {
+            background-color: aquamarine;
+            height: 80px;
+            margin: 0;
+            padding: 10px;
+        }
+        ul {
+            list-style-type: none;
+            margin: 10px auto;
+            padding: 0;
+        }
+        nav > ul > li {
+            display: inline-block;
+            float: left;
+            padding: 20px 15px;
 
         }
-
-        #sanitized {
+        nav > ul > li:hover {
+            background-color: aqua;
+        }
+        nav > ul > li.settings {
+            float: right;
+            display: inline-block;
+        }
+        nav > ul > li.settings:hover > ul {
+            display: block;
+            cursor: pointer;
+            border: white;
+        }
+        nav > ul > li > ul.drop {
+            display: none;
+        }
+        nav > ul > li > ul.drop> li:hover {
+            background-color: #c404ff;
+        }
+        textarea {
+            display: block;
+            margin: 0 0;
             padding: 3px;
+            width: 50%;
+            height: 80px;
+        }
+        #sanitized {
+            margin: 0 0;
+            padding: 3px;
+            width:40%;
+            border: 2px solid #eee;
+        }
+        span {
+            padding: 5px;
         }
 
         span.active {
@@ -20,8 +65,25 @@
     </style>
 </head>
 <body>
+
+<nav>
+    <ul>
+        <li>HOME</li>
+        <li>ABOUT US</li>
+        <li class="settings">SETTINGS
+        <ul class="drop">
+            <li>user profile</li>
+            <li>scores</li>
+            <li>game settings</li>
+            <li>logout</li>
+        </ul>
+    </ul>
+</nav>
+
+
+
 <textarea id="text_to_type">
-    Vincent Willem van Gogh (Dutch: [ˈvɪnsɛnt ˈʋɪləm vɑn ˈɣɔχ] ( listen);[note 1] 30 March 1853 – 29 July 1890) was a Post-Impressionist painter of Dutch origin whose work—notable for its rough beauty, emotional honesty, and bold color—had a far-reaching influence on 20th-century art. After years of painful anxiety and frequent bouts of mental illness,[1][2] he died aged 37 from a gunshot wound, generally accepted to be self-inflicted (although no gun was ever found).[3][note 2]
+    Vincent Willem van Gogh ( listen);[note 1] 30 March 1853 – 29 July 1890) was a Post-Impressionist painter of Dutch origin whose work—notable for its rough beauty, emotional honesty, and bold color—had a far-reaching influence on 20th-century art. After years of painful anxiety and frequent bouts of mental illness,[1][2] he died aged 37 from a gunshot wound, generally accepted to be self-inflicted (although no gun was ever found).[3][note 2]
 </textarea>
 <div id="sanitized">
 
